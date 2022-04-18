@@ -7,48 +7,42 @@ public class GitRepositoryService
 {
     private IOptions<GityardSettings> _settings;
     public GityardSettings Settings => _settings.Value;
-    public IEnumerable<Repository> AllRepositories => RepositoryDirectories(Settings.BasePath).Select(d => new Repository(d.FullName));
 
     public GitRepositoryService(IOptions<GityardSettings> settings)
     {
         _settings = settings;
     }
-    public IEnumerable<DirectoryInfo> RepositoryDirectories(string basePath)
+    public IEnumerable<string> GetRepositories(string userName)
     {
-        var repos = new List<DirectoryInfo>();
-        DirectoryInfo baseDir = new(basePath);
-        foreach (DirectoryInfo path in baseDir.EnumerateDirectories())
+        DirectoryInfo userDir = new(Path.Combine(Settings.BasePath, userName));
+        if (userDir.Exists)
         {
-            string repPath = Repository.Discover(path.FullName);
-            if (repPath != null)
+            foreach (var path in userDir.EnumerateDirectories())
             {
-                repos.Add(new DirectoryInfo(repPath));
+                string repPath = Repository.Discover(path.FullName);
+                if (!string.IsNullOrEmpty(repPath))
+                {
+                    yield return path.Name;
+                }
             }
         }
-        return repos;
     }
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="repoPath">user/repo</param>
-    /// <returns></returns>
-    public Repository GetRepository(string userName, string repoName) => new(Path.Combine(Settings.BasePath, userName, repoName));
-
-    protected Commit GetLatestCommit(string userName, string repoName, string? branchName = null)
-    {
-        Repository repo = GetRepository(userName, repoName);
-
-        Branch barnch = branchName == null ? repo.Head : repo.Branches.First(d => d.CanonicalName == branchName);
-        return barnch.Tip;
-    }
-    public Repository CreateRepository(string userName, string repoName)
+    public string CreateRepository(string userName, string repoName)
     {
         string repoPath = Path.Combine(Settings.BasePath, userName, repoName);
+        if (Directory.Exists(repoPath))
+        {
+            return "";
+        }
         Repository repo = new(Repository.Init(repoPath, true));
-        return repo;
+        if (repo == null)
+        {
+            return "";
+        }
+        return repoName;
     }
 
-    public Repository? CreateRepository(string userName, string repoName, string remoteUrl)
+    public string CreateRepository(string userName, string repoName, string remoteUrl)
     {
         var repoPath = Path.Combine(Settings.BasePath, userName, repoName);
         try
@@ -63,7 +57,7 @@ public class GitRepositoryService
                     IEnumerable<string> refSpecs = remote.FetchRefSpecs.Select(x => x.Specification);
                     Commands.Fetch(repo, remote.Name, refSpecs, null, logMessage);
                 }
-                return repo;
+                return repoName;
             }
         }
         catch
@@ -76,8 +70,23 @@ public class GitRepositoryService
             {
                 //todo:log create failed
             }
-            return null;
+            return "";
         }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="repoPath">user/repo</param>
+    /// <returns></returns>
+    public Repository GetRepository(string userName, string repoName) => new(Path.Combine(Settings.BasePath, userName, repoName));
+
+    protected Commit GetLatestCommit(string userName, string repoName, string? branchName = null)
+    {
+        Repository repo = GetRepository(userName, repoName);
+
+        Branch barnch = branchName == null ? repo.Head : repo.Branches.First(d => d.CanonicalName == branchName);
+        return barnch.Tip;
     }
 
     public void DeleteRepository(string userName, string repoName)

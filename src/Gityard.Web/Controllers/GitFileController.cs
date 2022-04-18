@@ -15,6 +15,30 @@ public class GitFileController : ControllerBase
     {
         _repoService = repoService;
     }
+    [HttpGet("{userName}/repositories")]
+    public IActionResult UserRepositories(string userName)
+    {
+        var repos = _repoService.GetRepositories(userName);
+        return new JsonResult(repos);
+    }
+    [HttpPost("{userName}/repository/{repoName}")]
+    public IActionResult CreateRepository(string userName, string repoName, [FromBody] CreateRepositoryDto repoDto)
+    {
+        string result;
+        if (repoDto == null || string.IsNullOrEmpty(repoDto.RemoteUrl))
+        {
+            result = _repoService.CreateRepository(userName, repoName);
+        }
+        else if (repoDto != null && !string.IsNullOrEmpty(repoDto.RemoteUrl))
+        {
+            result = _repoService.CreateRepository(userName, repoName, repoDto.RemoteUrl);
+        }
+        else
+        {
+            result = "";
+        }
+        return new JsonResult(result);
+    }
 
     [HttpGet("{userName}/{repoName}")]
     [HttpGet("{userName}/{repoName}.git")]
