@@ -6,6 +6,7 @@ using Gityard.Application.Dtos;
 
 namespace Gityard.Controllers;
 
+[Produces("application/json")]
 [ApiController]
 [Route("")]
 public class GitFileController : ControllerBase
@@ -15,14 +16,15 @@ public class GitFileController : ControllerBase
     {
         _repoService = repoService;
     }
+
     [HttpGet("{userName}/repositories")]
-    public IActionResult UserRepositories(string userName)
+    public IEnumerable<string> UserRepositories(string userName)
     {
-        var repos = _repoService.GetRepositories(userName);
-        return new JsonResult(repos);
+        return _repoService.GetRepositories(userName);
     }
-    [HttpPost("{userName}/repository/{repoName}")]
-    public IActionResult CreateRepository(string userName, string repoName, [FromBody] CreateRepositoryDto repoDto)
+
+    [HttpPost("{userName}/{repoName}")]
+    public string CreateRepository(string userName, string repoName, [FromBody] CreateRepositoryDto? repoDto)
     {
         string result;
         if (repoDto == null || string.IsNullOrEmpty(repoDto.RemoteUrl))
@@ -37,43 +39,53 @@ public class GitFileController : ControllerBase
         {
             result = "";
         }
-        return new JsonResult(result);
+        return result;
+    }
+
+    [HttpGet("{userName}/{repoName}/branches")]
+    public IEnumerable<string> Branches(string userName, string repoName)
+    {
+        return _repoService.Branches(userName, repoName);
+    }
+
+    [HttpGet("{userName}/{repoName}/commits")]
+
+    public IEnumerable<CommitDto> Commits(string userName, string repoName)
+    {
+        return _repoService.Commits(userName, repoName);
+    }
+
+    [HttpGet("{userName}/{repoName}/commits/{branchName}")]
+
+    public IEnumerable<CommitDto> Commits(string userName, string repoName, string branchName)
+    {
+        return _repoService.Commits(userName, repoName, branchName);
+    }
+
+    [HttpGet("{userName}/{repoName}/tags")]
+
+    public IEnumerable<string> Tags(string userName, string repoName)
+    {
+        return _repoService.Tags(userName, repoName);
     }
 
     [HttpGet("{userName}/{repoName}")]
     [HttpGet("{userName}/{repoName}.git")]
-    public IActionResult TreeView(string userName, string repoName)
+    public IEnumerable<TreeDto> TreeView(string userName, string repoName)
     {
-        return TreeView(userName, repoName, "master", null);
-    }
-    [HttpGet("{userName}/{repoName}/tree/{id}/{*path}")]
-    public IActionResult TreeView(string userName, string repoName, string id, string? path)
-    {
-        var repoPath = Path.Combine(userName, repoName);
-        Repository repo = _repoService.GetRepository(userName, repoName);
-        Commit commit = repo.Branches[id]?.Tip ?? repo.Lookup<Commit>(id);
-
-        if (commit == null)
-        {
-            return new JsonResult("");
-        }
-        Tree tree = commit.Tree;
-        if (string.IsNullOrEmpty(path))
-        {
-            return new JsonResult(new TreeDto(tree.Id.ToString(), tree.Count, tree.Sha, ""));
-        }
-        TreeEntry entry = commit[path];
-        return new JsonResult("");
+        return _repoService.GetTree(userName, repoName, "master", "");
     }
 
-    [HttpGet("{userName}/{repoName}/blob/{id}/{*path}")]
-    public IActionResult BlobView(string userName, string repoName, string id, string path)
+    [HttpGet("{userName}/{repoName}/tree/{brancheName}")]
+    public IEnumerable<TreeDto> TreeView(string userName, string repoName, string brancheName)
     {
-        return new JsonResult("");
+        return _repoService.GetTree(userName, repoName, brancheName, "");
     }
-    [HttpGet("{userName}/{repoName}/raw/{id}/{*path}")]
-    public IActionResult RawBlobView(string userName, string repoName, string id, string path)
+
+    [HttpGet("{userName}/{repoName}/tree/{brancheName}/{*path}")]
+
+    public IEnumerable<TreeDto> TreeView(string userName, string repoName, string brancheName, string path)
     {
-        return new JsonResult("");
+        return _repoService.GetTree(userName, repoName, brancheName, path);
     }
 }

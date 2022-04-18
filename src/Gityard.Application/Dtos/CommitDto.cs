@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Gityard.Application.Dtos
 {
-    public record CommitDto(string Id, string Message, string Author, string Time);
+    public record CommitDto(string Id, string Message, string Author, string Sha,DateTimeOffset When);
 }

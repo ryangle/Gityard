@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace Gityard.Application.Dtos
 {
-    public record TreeDto(string Id, int Count, string Sha,string Parent);
+    public record TreeDto(string Id, string Mode, long Size,string path);
 }
