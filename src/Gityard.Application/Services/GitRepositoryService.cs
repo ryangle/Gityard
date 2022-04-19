@@ -6,10 +6,10 @@ namespace Gityard.Services;
 
 public class GitRepositoryService
 {
-    private IOptions<GityardSettings> _settings;
-    public GityardSettings Settings => _settings.Value;
+    private IOptions<GityardOptions> _settings;
+    public GityardOptions Settings => _settings.Value;
 
-    public GitRepositoryService(IOptions<GityardSettings> settings)
+    public GitRepositoryService(IOptions<GityardOptions> settings)
     {
         _settings = settings;
     }

@@ -17,7 +17,7 @@ public class GitCommandController : ControllerBase
     }
 
     [HttpPost("{userName}/{repoName}.git/git-upload-pack")]
-    public IActionResult GitUploadPack(string userName, string repoName)
+    public ActionResult<GitCommandResult> GitUploadPack(string userName, string repoName)
     {
         var repo = _gitRepositoryService.GetRepository(userName, repoName);
         if (repo == null)
@@ -33,7 +33,7 @@ public class GitCommandController : ControllerBase
     }
 
     [HttpPost("{userName}/{repoName}.git/git-receive-pack")]
-    public IActionResult GitReceivePack(string userName, string repoName)
+    public ActionResult<GitCommandResult> GitReceivePack(string userName, string repoName)
     {
         var repo = _gitRepositoryService.GetRepository(userName, repoName);
         if (repo == null)
@@ -48,7 +48,7 @@ public class GitCommandController : ControllerBase
     }
 
     [HttpGet("{userName}/{repoName}.git/info/refs")]
-    public IActionResult GetInfoRefs(string userName, string repoName, string service)
+    public ActionResult<GitCommandResult> GetInfoRefs(string userName, string repoName, string service)
     {
         var repo = _gitRepositoryService.GetRepository(userName, repoName);
         if (repo == null)

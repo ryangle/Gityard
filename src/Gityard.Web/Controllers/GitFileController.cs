@@ -2,9 +2,12 @@
 using Gityard.Services;
 using Gityard.Application.Dtos;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Gityard.Controllers;
 
+[Authorize]
 [Produces("application/json")]
 [ApiController]
 [Route("")]
@@ -21,7 +24,12 @@ public class GitFileController : ControllerBase
     [HttpGet("{userName}/repositories")]
     public IEnumerable<string> UserRepositories(string userName)
     {
-        return _repoService.GetRepositories(userName);
+        var user = User.FindFirst(ClaimTypes.Name);
+        if (user != null && user.Value == userName)
+        {
+            return _repoService.GetRepositories(userName);
+        }
+        return new List<string>();
     }
 
     [HttpPost("{userName}/{repoName}")]
