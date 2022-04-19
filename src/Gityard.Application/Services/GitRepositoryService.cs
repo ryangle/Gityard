@@ -93,14 +93,15 @@ public class GitRepositoryService
         }
         return null;
     }
-    public IEnumerable<string> Branches(string userName, string repoName)
+    public IEnumerable<BranchDto> Branches(string userName, string repoName)
     {
         var repo = GetRepository(userName, repoName);
         if (repo == null)
         {
-            return new List<string>();
+            return new List<BranchDto>();
         }
-        return repo.Branches.Select(b => b.FriendlyName);
+        return repo.Branches
+            .Select(b => new BranchDto(b.FriendlyName, b.UpstreamBranchCanonicalName, b.RemoteName, b.CanonicalName));
     }
     public IEnumerable<CommitDto> Commits(string userName, string repoName, string brancheName = "", int pageNo = 1, int pageSize = 10)
     {
@@ -111,14 +112,20 @@ public class GitRepositoryService
         }
         if (string.IsNullOrEmpty(brancheName))
         {
-            return repo.Commits.Skip((pageNo - 1) * pageSize).Take(pageSize).Select(c => new CommitDto(c.Id.ToString().Substring(0, 7), c.MessageShort, c.Author.Name, c.Sha, c.Author.When));
+            return repo.Commits
+                .Skip((pageNo - 1) * pageSize)
+                .Take(pageSize)
+                .Select(c => new CommitDto(c.Id.ToString().Substring(0, 7), c.MessageShort, c.Author.Name, c.Sha, c.Author.When));
         }
         var branch = repo.Branches[brancheName];
         if (branch == null)
         {
             return new List<CommitDto>();
         }
-        return branch.Commits.Skip((pageNo - 1) * pageSize).Take(pageSize).Select(c => new CommitDto(c.Id.ToString().Substring(0, 7), c.MessageShort, c.Author.Name, c.Sha, c.Author.When));
+        return branch.Commits
+            .Skip((pageNo - 1) * pageSize)
+            .Take(pageSize)
+            .Select(c => new CommitDto(c.Id.ToString().Substring(0, 7), c.MessageShort, c.Author.Name, c.Sha, c.Author.When));
     }
     public IEnumerable<string> Tags(string userName, string repoName)
     {

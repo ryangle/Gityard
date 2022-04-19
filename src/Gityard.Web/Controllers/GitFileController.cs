@@ -1,8 +1,7 @@
-﻿using LibGit2Sharp;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Gityard.Services;
-using System.Text.Json;
 using Gityard.Application.Dtos;
+using Microsoft.Extensions.Logging;
 
 namespace Gityard.Controllers;
 
@@ -11,9 +10,11 @@ namespace Gityard.Controllers;
 [Route("")]
 public class GitFileController : ControllerBase
 {
+    private readonly ILogger<GitFileController> _logger;
     private GitRepositoryService _repoService;
-    public GitFileController(GitRepositoryService repoService)
+    public GitFileController(ILogger<GitFileController> logger, GitRepositoryService repoService)
     {
+        _logger = logger;
         _repoService = repoService;
     }
 
@@ -43,7 +44,7 @@ public class GitFileController : ControllerBase
     }
 
     [HttpGet("{userName}/{repoName}/branches")]
-    public IEnumerable<string> Branches(string userName, string repoName)
+    public IEnumerable<BranchDto> Branches(string userName, string repoName)
     {
         return _repoService.Branches(userName, repoName);
     }

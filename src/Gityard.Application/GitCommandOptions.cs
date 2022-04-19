@@ -10,14 +10,14 @@ public class GitCommandOptions
     public bool AdvertiseRefs { get; set; }
     public bool EndStreamWithNull { get; set; }
     public string Service { get; set; }
-    public Repository Repository { get; set; }
+    public Repository Repo { get; set; }
 
     public GitCommandOptions(Repository repo,
         string service,
         bool advertiseRefs,
         bool endStreamWithNull = true)
     {
-        Repository = repo;
+        Repo = repo;
         Service = service;
         AdvertiseRefs = advertiseRefs;
         EndStreamWithNull = endStreamWithNull;
@@ -38,7 +38,7 @@ public class GitCommandOptions
         if (AdvertiseRefs)
             builder.Append(" --advertise-refs");
 
-        builder.Append($@" ""{Repository.Info.Path.TrimEnd(Path.DirectorySeparatorChar)}""");
+        builder.Append($@" ""{Repo.Info.Path.TrimEnd(Path.DirectorySeparatorChar)}""");
 
         return builder.ToString();
     }
