@@ -17,13 +17,13 @@ public class GitCommandController : ControllerBase
     }
 
     [HttpPost("{userName}/{repoName}.git/git-upload-pack")]
-    public ActionResult<GitCommandResult> GitUploadPack(string userName, string repoName)
+    public GitCommandResult GitUploadPack(string userName, string repoName)
     {
         var repo = _gitRepositoryService.GetRepository(userName, repoName);
-        if (repo == null)
-        {
-            return NotFound($"not found {userName}/{repoName}.git");
-        }
+        //if (repo == null)
+        //{
+        //    return NotFound($"not found {userName}/{repoName}.git");
+        //}
         var result = new GitCommandResult(_gitRepositoryService.Settings.GitPath, new GitCommandOptions(
              repo,
              "git-upload-pack",
@@ -33,13 +33,13 @@ public class GitCommandController : ControllerBase
     }
 
     [HttpPost("{userName}/{repoName}.git/git-receive-pack")]
-    public ActionResult<GitCommandResult> GitReceivePack(string userName, string repoName)
+    public GitCommandResult GitReceivePack(string userName, string repoName)
     {
         var repo = _gitRepositoryService.GetRepository(userName, repoName);
-        if (repo == null)
-        {
-            return NotFound($"not found {userName}/{repoName}.git");
-        }
+        //if (repo == null)
+        //{
+        //    return NotFound($"not found {userName}/{repoName}.git");
+        //}
         var result = new GitCommandResult(_gitRepositoryService.Settings.GitPath, new GitCommandOptions(
            repo,
            "git-receive-pack",
@@ -48,13 +48,13 @@ public class GitCommandController : ControllerBase
     }
 
     [HttpGet("{userName}/{repoName}.git/info/refs")]
-    public ActionResult<GitCommandResult> GetInfoRefs(string userName, string repoName, string service)
+    public GitCommandResult GetInfoRefs(string userName, string repoName, string service)
     {
         var repo = _gitRepositoryService.GetRepository(userName, repoName);
-        if (repo == null)
-        {
-            return NotFound($"not found {userName}/{repoName}.git");
-        }
+        //if (repo == null)
+        //{
+        //    return NotFound($"not found {userName}/{repoName}.git");
+        //}
         var result = new GitCommandResult(_gitRepositoryService.Settings.GitPath, new GitCommandOptions(
             repo,
             service,
