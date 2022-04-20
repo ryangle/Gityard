@@ -1,12 +1,14 @@
 using Gityard.Application;
 using Gityard.Services;
 using Gityard.Web;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gityard.Controllers;
 
 [ApiController]
 [Route("")]
+[Authorize(AuthenticationSchemes = BasicAuthenticationDefaults.AuthenticationScheme)]
 public class GitCommandController : ControllerBase
 {
     private GitRepositoryService _gitRepositoryService;

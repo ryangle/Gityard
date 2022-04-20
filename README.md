@@ -15,7 +15,13 @@ Windows、Linux、MacOS等系统上。
 * [LibGit2Sharp](https://github.com/libgit2/libgit2sharp/)
 
 
-## 部署时需要：
+## 部署时需要
 
 * 安装git，以支持git命令
 * 设置appsettings.json中的GityardOptions，BasePaht为服务器的仓库目录
+
+## 未完成
+
+* Git Command 接口的权限
+* Git Command 返回错误
+* 操作界面

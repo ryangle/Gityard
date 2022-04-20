@@ -35,6 +35,12 @@ public class GitFileController : ControllerBase
     [HttpPost("{userName}/{repoName}")]
     public string CreateRepository(string userName, string repoName, [FromBody] CreateRepositoryDto? repoDto)
     {
+        var user = User.FindFirst(ClaimTypes.Name);
+        if (user != null && user.Value == userName)
+        {
+            return "";
+        }
+
         string result;
         if (repoDto == null || string.IsNullOrEmpty(repoDto.RemoteUrl))
         {

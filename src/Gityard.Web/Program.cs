@@ -2,6 +2,7 @@ using Gityard;
 using Gityard.Application;
 using Gityard.Application.Services;
 using Gityard.Services;
+using Gityard.Web;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -39,7 +40,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true
         };
-    });
+    }).AddBasic(); 
+
+//builder.Services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme).AddBasic();
 
 builder.Services.AddTransient<UserServcie>();
 builder.Services.AddTransient<GitRepositoryService>();
