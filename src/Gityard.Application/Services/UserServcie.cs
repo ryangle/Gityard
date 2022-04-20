@@ -42,12 +42,12 @@ public class UserServcie
             .Select(u => new GityardUserDto(u.Name, "", u.Email))
             .FirstOrDefault();
     }
-    public string Login(string username, string password)
+    public ResponseResult<string> Login(string username, string password)
     {
         var user = Get(username, password);
         if (user == null)
         {
-            return "";
+            return new ResponseResult<string> { Data = "" };
         }
         return CreateToken(user.Name);
     }
@@ -56,11 +56,16 @@ public class UserServcie
         Users.Delete(id);
     }
 
-    public string Create(GityardUserDto userDto)
+    public ResponseResult<string> Create(GityardUserDto userDto)
     {
         if (userDto == null || string.IsNullOrEmpty(userDto.Name) || string.IsNullOrEmpty(userDto.Password))
         {
-            return "";
+            return new ResponseResult<string> { Data = "" };
+        }
+        var userExist = Users.Find(x => x.Name == userDto.Name).FirstOrDefault();
+        if (userExist != null)
+        {
+            return new ResponseResult<string> { Data = "" };
         }
         GityardUser user = new()
         {
@@ -70,10 +75,10 @@ public class UserServcie
             Password = userDto.Password
         };
         var b = Users.Insert(user);
-        return b.ToString();
+        return new ResponseResult<string> { Data = b.ToString() };
     }
 
-    private string CreateToken(string userName)
+    private ResponseResult<string> CreateToken(string userName)
     {
         var expire = DateTime.UtcNow.AddSeconds(_jwtOptions.ExpireSeconds);
 
@@ -89,7 +94,7 @@ public class UserServcie
 
         var token = _tokenHandler.WriteToken(tokenDescriptor);
 
-        return token;
+        return new ResponseResult<string> { Data = token };
     }
     public IEnumerable<string> ValidToken(string token)
     {
@@ -99,8 +104,7 @@ public class UserServcie
         }
         try
         {
-
-            TokenValidationParameters parameters = new TokenValidationParameters();
+            TokenValidationParameters parameters = new();
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecKey));
             parameters.IssuerSigningKey = securityKey;
             parameters.ValidateIssuer = false;

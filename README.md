@@ -19,9 +19,8 @@ Windows、Linux、MacOS等系统上。
 
 * 安装git，以支持git命令
 * 设置appsettings.json中的GityardOptions，BasePaht为服务器的仓库目录
+* 默认用户ryan，密码111111
 
 ## 未完成
 
-* Git Command 接口的权限
-* Git Command 返回错误
 * 操作界面

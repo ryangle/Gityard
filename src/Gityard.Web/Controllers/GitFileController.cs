@@ -22,23 +22,23 @@ public class GitFileController : ControllerBase
     }
 
     [HttpGet("{userName}/repositories")]
-    public IEnumerable<string> UserRepositories(string userName)
+    public ResponseResult<IEnumerable<string>> UserRepositories(string userName)
     {
         var user = User.FindFirst(ClaimTypes.Name);
         if (user != null && user.Value == userName)
         {
             return _repoService.GetRepositories(userName);
         }
-        return new List<string>();
+        return new ResponseResult<IEnumerable<string>>();
     }
 
     [HttpPost("{userName}/{repoName}")]
-    public string CreateRepository(string userName, string repoName, [FromBody] CreateRepositoryDto? repoDto)
+    public ResponseResult<string> CreateRepository(string userName, string repoName, [FromBody] CreateRepositoryDto? repoDto)
     {
         var user = User.FindFirst(ClaimTypes.Name);
         if (user != null && user.Value == userName)
         {
-            return "";
+            return new ResponseResult<string> { Code = -1, Data = "" };
         }
 
         string result;
@@ -52,9 +52,9 @@ public class GitFileController : ControllerBase
         }
         else
         {
-            result = "";
+            return new ResponseResult<string> { Code = -1, Data = "" };
         }
-        return result;
+        return new ResponseResult<string> { Data = result };
     }
 
     [HttpGet("{userName}/{repoName}/branches")]

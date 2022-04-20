@@ -3,7 +3,6 @@ using Gityard.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-
 namespace Gityard.Web.Controllers;
 
 [Produces("application/json")]
@@ -18,25 +17,19 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("user")]
-    public string Register([FromBody] GityardUserDto userGityardDto)
+    public ResponseResult<string> Register([FromBody] GityardUserDto userGityardDto)
     {
         return _userServcie.Create(userGityardDto);
     }
     [Authorize]
     [HttpGet("user")]
-    public IEnumerable<GityardUserDto> GetUsers()
+    public ResponseResult<IEnumerable<GityardUserDto>> GetUsers()
     {
-        return _userServcie.GetAllUser().Select(u => new GityardUserDto(u.Name, "", u.Email));
+        return new ResponseResult<IEnumerable<GityardUserDto>> { Data = _userServcie.GetAllUser().Select(u => new GityardUserDto(u.Name, "", u.Email)) };
     }
     [HttpPost("login")]
-    public string Login([FromBody] GityardUserDto userGityardDto)
+    public ResponseResult<string> Login([FromBody] GityardUserDto userGityardDto)
     {
         return _userServcie.Login(userGityardDto.Name, userGityardDto.Password);
     }
-    [HttpPost("valid")]
-    public IEnumerable<string> Login([FromBody] string token)
-    {
-        return _userServcie.ValidToken(token);
-    }
-
 }

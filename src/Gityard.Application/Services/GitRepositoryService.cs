@@ -13,9 +13,10 @@ public class GitRepositoryService
     {
         _settings = settings;
     }
-    public IEnumerable<string> GetRepositories(string userName)
+    public ResponseResult<IEnumerable<string>> GetRepositories(string userName)
     {
         DirectoryInfo userDir = new(Path.Combine(Settings.BasePath, userName));
+        List<string> result = new List<string>();
         if (userDir.Exists)
         {
             foreach (var path in userDir.EnumerateDirectories())
@@ -23,10 +24,11 @@ public class GitRepositoryService
                 string repPath = Repository.Discover(path.FullName);
                 if (!string.IsNullOrEmpty(repPath))
                 {
-                    yield return path.Name;
+                    result.Add(path.Name);
                 }
             }
         }
+        return new ResponseResult<IEnumerable<string>> { Data = result };
     }
     public string CreateRepository(string userName, string repoName)
     {

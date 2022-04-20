@@ -50,7 +50,7 @@ public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticat
     private Task<ClaimsPrincipal?> SignInAsync(string userName, string password)
     {
         var result = _userServcie.Login(userName, password);
-        if (!string.IsNullOrEmpty(result))
+        if (!string.IsNullOrEmpty(result.Data))
         {
             var identity = new ClaimsIdentity(BasicAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
             identity.AddClaim(new Claim(ClaimTypes.Name, userName));
