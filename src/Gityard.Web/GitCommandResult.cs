@@ -41,7 +41,7 @@ public class GitCommandResult : IActionResult
         response.Headers.Add("Pragma", "no-cache");
         response.Headers.Add("Cache-Control", "no-cache, max-age=0, must-revalidate");
 
-        ProcessStartInfo info = new ProcessStartInfo(_gitPath, _options.ToString())
+        ProcessStartInfo info = new(_gitPath, _options.ToString())
         {
             UseShellExecute = false,
             CreateNoWindow = true,

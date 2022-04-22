@@ -21,6 +21,10 @@ Windows、Linux、MacOS等系统上。
 * 设置appsettings.json中的GityardOptions，BasePaht为服务器的仓库目录
 * 默认用户ryan，密码111111
 
-## 未完成
+## 备注
 
-* 操作界面
+* 待完成操作界面
+* LibGit2Sharp当前还[没有支持Smart Http](https://github.com/libgit2/libgit2sharp/issues/90)
+* [git-dot-aspx](https://github.com/JeremySkinner/git-dot-aspx)项目使用[GitSharp](https://github.com/henon/GitSharp)实现了Smart Http Protocal，项目太老，已经停止更新。
+* 另一个Git Server 项目[GitDC](https://github.com/qcjxberin/GitDC)
+* [ngit](https://github.com/mono/ngit)
