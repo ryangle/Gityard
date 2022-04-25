@@ -10,20 +10,24 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Gityard.Application.Services;
 
 public class UserServcie
 {
     private readonly LiteDatabase _database;
+    private readonly IMemoryCache _memoryCache;
     public ILiteCollection<GityardUser> Users => _database.GetCollection<GityardUser>();
     private JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
     private JwtOptions _jwtOptions;
-    public UserServcie(IOptionsSnapshot<DbOptions> dbOptions, IOptionsSnapshot<JwtOptions> jwtOptions)
+    public UserServcie(IOptionsSnapshot<DbOptions> dbOptions, IOptionsSnapshot<JwtOptions> jwtOptions, IMemoryCache memoryCache)
     {
         _jwtOptions = jwtOptions.Value;
         _database = new LiteDatabase(dbOptions.Value.DefaultConnection);
         Users.EnsureIndex(x => x.Id);
+
+        _memoryCache = memoryCache;
     }
 
     public List<GityardUser> GetAllUser()
@@ -32,7 +36,20 @@ public class UserServcie
     }
     public GityardUser? Get(string id)
     {
-        return Users.Find(x => x.Id == id).FirstOrDefault();
+        var cacheKey = $"user-{id}";
+        if (!_memoryCache.TryGetValue(cacheKey, out GityardUser user))
+        {
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromSeconds(3));
+            var temp = Users.Find(x => x.Id == id).FirstOrDefault();
+            if (temp == null)
+            {
+                return null;
+            }
+            user = temp;
+            _memoryCache.Set(cacheKey, user, cacheEntryOptions);
+        }
+        return user;
 
     }
     public GityardUserDto? Get(string username, string password)

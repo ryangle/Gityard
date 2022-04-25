@@ -1,5 +1,4 @@
 using Gityard;
-using Gityard.Application;
 using Gityard.Application.Services;
 using Gityard.Services;
 using Gityard.Web;
@@ -25,7 +24,7 @@ builder.Services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOption
 
 builder.Services.Configure<GityardOptions>(configuration.GetSection(nameof(GityardOptions)));
 builder.Services.Configure<DbOptions>(configuration.GetSection(nameof(DbOptions)));
-
+builder.Services.AddMemoryCache();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opt =>
@@ -40,9 +39,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true
         };
-    }).AddBasic(); 
-
-//builder.Services.AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme).AddBasic();
+    })
+    .AddBasic();
 
 builder.Services.AddTransient<UserServcie>();
 builder.Services.AddTransient<GitRepositoryService>();
